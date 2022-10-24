@@ -1,12 +1,12 @@
 import express from 'express'
-import userController from '../controllers/user.controller.js'
+import { create, findAll, fidUserById, update } from '../controllers/user.controller.js'
 import {validUser, validId} from '../middlewares/userMiddlewares.js'
 
 const router = express.Router()
 
-router.post('/', userController.create);
-router.get('/', userController.findAll)
-router.get('/:id', validId, validUser, userController.fidUserById)
-router.patch('/:id', validId, validUser, userController.update)
+router.post('/', create);
+router.get('/', findAll)
+router.get('/:id', validId, validUser, fidUserById)
+router.patch('/:id', validId, validUser, update)
 
 export default  router;
