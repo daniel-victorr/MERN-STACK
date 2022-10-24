@@ -1,7 +1,7 @@
 # MERN-STACK
 
-Based on how companies currently use.
-Using good programming practices;
+Based on how companies currently use it. 
+They use good programming practices;
 
 Technologies used:
 
