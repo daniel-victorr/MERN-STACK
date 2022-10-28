@@ -8,7 +8,12 @@ const create = async (req, res) => {
             res.status(400).send({ message: "Submint all fields for registraion" })
         }
 
-        const user = await userService.create(req.body);
+        const user = await userService.create(req.body)
+            .catch((err) => console.log(err.message));
+
+        if (!user) {
+            return res.status(400).send({ message: "Error creating User" })
+        }
 
         res.status(201).send({
             message: "user created successfully",
