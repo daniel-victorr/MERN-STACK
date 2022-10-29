@@ -21,8 +21,7 @@ const login = async (req, res) => {
 
         res.status(201).send({ token });
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send({message: err.message});
     }
 }
-
 export { login }

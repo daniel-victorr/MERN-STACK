@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { create, getAll} from '../controllers/news.controller.js';
+import { createNew, getAll} from '../controllers/news.controller.js';
+import { authMeddleware } from '../middlewares/auth.middleware.js'
 
 const router = Router();
 
-router.post('/', create);
-router.get('/', getAll);
+router.post('/', authMeddleware, createNew);
+router.get('/', authMeddleware, getAll);
 
 export default router;

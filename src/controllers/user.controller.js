@@ -27,7 +27,7 @@ const create = async (req, res) => {
             }
         })
     } catch (err) {
-        res.status(500).send({ message: err.message })
+        res.status(500).send({ message: message.err })
     }
 }
 
@@ -40,7 +40,7 @@ const findAll = async (req, res) => {
         }
         res.status(200).send(users)
     } catch (err) {
-        res.status(500).send({ message: err.message })
+        res.status(500).send({ message: message.err })
     }
 }
 
@@ -50,7 +50,7 @@ const fidUserById = (req, res) => {
         const user = req.user
         res.status(201).send(user)
     } catch (err) {
-        res.status(500).send({ message: err.message })
+        res.status(500).send({ message: message.err })
     }
 }
 
@@ -74,7 +74,7 @@ const update = async (req, res) => {
 
         res.status(201).send({ message: "User successfully updated" })
     } catch (err) {
-        res.status(500).send({ message: err.message })
+        res.status(500).send({ message: message.err })
     }
 }
 
