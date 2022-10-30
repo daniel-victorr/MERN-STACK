@@ -1,4 +1,4 @@
-import { createNews, getAllNews, countNews } from '../services/news.service.js'
+import { createNews, getAllNews, countNews, topNewsServices } from '../services/news.service.js'
 
 const createNew = async (req, res) => {
     try {
@@ -56,8 +56,8 @@ const getAll = async (req, res) => {
                 banner: item.banner,
                 likes: item.likes,
                 coments: item.coments,
-                name: item.user.name,
-                userName: item.user.username,
+                 name: item.user.name,
+                userName: item.user.userName,
                 userAvatar: item.user.avatar,
             }))
 
@@ -67,7 +67,33 @@ const getAll = async (req, res) => {
     }
 }
 
-export { getAll, createNew }
+const topNews = async (req, res) => {
+    try {
+        const news = await topNewsServices()
+
+        if (news.length === 0) {
+            res.status(400).send({ message: "There is no registered post" })
+        }
+
+        res.status(200).send({
+            news:{  
+                id: news.id,
+                title: news.title,
+                text: news.text,
+                banner: news.banner,
+                likes: news.likes,
+                coments: news.coments,
+                name: news.user.name,
+                userName: news.user.userName,
+                userAvatar: news.user.avatar,
+                }})
+          
+    } catch (err) {
+        res.status(400).send({message: err.message})
+    }
+}
+
+export { getAll, createNew, topNews }
 
 
 
