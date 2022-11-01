@@ -1,6 +1,6 @@
-import { createNews, getAllNews, countNews, topNewsServices } from '../services/news.service.js'
+import { createNews, getAllNews, countNews, topNewsServices, findByIdService, searchByTitleService } from '../services/news.service.js'
 
-const createNew = async (req, res) => {
+export const createNew = async (req, res) => {
     try {
         const { title, text, banner } = req.body
 
@@ -16,7 +16,7 @@ const createNew = async (req, res) => {
     }
 }
 
-const getAll = async (req, res) => {
+export const getAll = async (req, res) => {
     try {
 
         let { limit, offset } = req.query;
@@ -56,7 +56,7 @@ const getAll = async (req, res) => {
                 banner: item.banner,
                 likes: item.likes,
                 coments: item.coments,
-                 name: item.user.name,
+                name: item.user.name,
                 userName: item.user.userName,
                 userAvatar: item.user.avatar,
             }))
@@ -67,7 +67,7 @@ const getAll = async (req, res) => {
     }
 }
 
-const topNews = async (req, res) => {
+export const topNews = async (req, res) => {
     try {
         const news = await topNewsServices()
 
@@ -76,7 +76,7 @@ const topNews = async (req, res) => {
         }
 
         res.status(200).send({
-            news:{  
+            news: {
                 id: news.id,
                 title: news.title,
                 text: news.text,
@@ -86,14 +86,67 @@ const topNews = async (req, res) => {
                 name: news.user.name,
                 userName: news.user.userName,
                 userAvatar: news.user.avatar,
-                }})
-          
+            }
+        })
+
     } catch (err) {
-        res.status(400).send({message: err.message})
+        res.status(500).send({ message: err.message })
     }
 }
 
-export { getAll, createNew, topNews }
+export const findById = async (req, res) => {
+    try {
+        const { id } = req.params
+        const news = await findByIdService(id)
+        
+        res.status(201).send({
+            news: {
+                id: news._id,
+                title: news.title,
+                text: news.text,
+                banner: news.banner,
+                likes: news.likes,
+                coments: news.coments,
+                name: news.user.name,
+                userName: news.user.userName,
+                userAvatar: news.user.avatar,
+            }
+        })
+    } catch (err) {
+        res.status(500).send({ message: err.message })
+     }
+}
+
+export const searchByTitle = async(req, res) => {
+
+    try {
+        
+        const { title } = req.query
+        const news = await searchByTitleService(title)
+
+        if(news.length === 0){
+            res.status(400).send({message: "There are no news with this title"})
+        }
+    
+        res.status(200).send({
+            results: news.map((item) => ({
+                id: item.id,
+                title: item.title,
+                text: item.text,
+                banner: item.banner,
+                likes: item.likes,
+                coments: item.coments,
+                name: item.user.name,
+                userName: item.user.userName,
+                userAvatar: item.user.avatar,
+            }))
+        })
+    } catch (err) {
+        res.status(500).send({message: err.message})
+    }
+
+}
+
 
 
 

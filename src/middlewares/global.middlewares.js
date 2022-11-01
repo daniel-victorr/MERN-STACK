@@ -22,7 +22,6 @@ export const validUser = async (req, res, next) => {
         if (!user) {
             res.status(404).send({ message: "User not found" })
         }
-
         req.user = user
         req.id = id
         next()
