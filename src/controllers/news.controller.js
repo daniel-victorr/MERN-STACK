@@ -1,6 +1,7 @@
-import { createNews, getAllNews, countNews, topNewsServices, findByIdService, searchByTitleService } from '../services/news.service.js'
+import mongoose from 'mongoose'
+import { createService, findAllService, countNews, topNewsServices, findByIdService, searchByTitleService, byUserService, updateService } from '../services/news.service.js'
 
-export const createNew = async (req, res) => {
+export const create = async (req, res) => {
     try {
         const { title, text, banner } = req.body
 
@@ -8,7 +9,7 @@ export const createNew = async (req, res) => {
             return res.status(400).send({ message: "Submit all fields for registration" })
         }
 
-        await createNews({ title, text, banner, user: req.userId })
+        await createService({ title, text, banner, user: req.userId })
         res.sendStatus(201)
     }
     catch (err) {
@@ -16,7 +17,7 @@ export const createNew = async (req, res) => {
     }
 }
 
-export const getAll = async (req, res) => {
+export const findtAll = async (req, res) => {
     try {
 
         let { limit, offset } = req.query;
@@ -29,7 +30,7 @@ export const getAll = async (req, res) => {
             offset = 0
         }
 
-        const news = await getAllNews(offset, limit)
+        const news = await findAllService(offset, limit)
         const total = await countNews()
         const URL = req.baseUrl
 
@@ -50,7 +51,7 @@ export const getAll = async (req, res) => {
             total,
 
             results: news.map((item) => ({
-                id: item.id,
+                id: item._id,
                 title: item.title,
                 text: item.text,
                 banner: item.banner,
@@ -67,7 +68,7 @@ export const getAll = async (req, res) => {
     }
 }
 
-export const topNews = async (req, res) => {
+export const topNews = async (req, res) => {    //Aula 22
     try {
         const news = await topNewsServices()
 
@@ -94,7 +95,7 @@ export const topNews = async (req, res) => {
     }
 }
 
-export const findById = async (req, res) => {
+export const findById = async (req, res) => {   //Aula 23
     try {
         const { id } = req.params
         const news = await findByIdService(id)
@@ -117,7 +118,7 @@ export const findById = async (req, res) => {
      }
 }
 
-export const searchByTitle = async(req, res) => {
+export const searchByTitle = async (req, res) => { //Aula 24
 
     try {
         
@@ -125,7 +126,7 @@ export const searchByTitle = async(req, res) => {
         const news = await searchByTitleService(title)
 
         if(news.length === 0){
-            res.status(400).send({message: "There are no news with this title"})
+           return res.status(400).send({message: "There are no news with this title"})
         }
     
         res.status(200).send({
@@ -145,6 +146,58 @@ export const searchByTitle = async(req, res) => {
         res.status(500).send({message: err.message})
     }
 
+}
+
+export const byUser = async (req, res) =>{    //Aula 25
+     try {
+    
+      const id = req.userId
+      const news = await byUserService(id)
+   
+      res.status(200).send({
+        results: news.map((item) => ({
+            id: item._id,
+            title: item.title,
+            text: item.text,
+            banner: item.banner,
+            likes: item.likes,
+            coments: item.coments,
+            name: item.user.name,
+            userName: item.user.userName,
+            userAvatar: item.user.avatar,
+        }))
+      })   
+     } catch (err) {
+        res.status(500).send({message: err.message})
+     }
+}
+
+export const update = async (req, res) =>{   //Aula 26
+       try {
+         const { title, text, banner } = req.body
+         const { id } = req.params
+         
+         if( !title && !text && !banner){
+            return res.sendStatus(400)
+         }
+
+         if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).send({ message: "Invalid ID" })
+        }
+         
+         const news = await findByIdService(id)
+
+
+         if(String(news.user._id) !== req.userId){
+            return res.status(400).send({message: "Você não poder alterar esse News"})
+         }
+
+         await updateService (id, title, text, banner)
+
+         res.status(201).send({message: "Alterado com sucesso!"})
+       } catch (err) {
+        res.status(500).send({message: err.message})
+       }
 }
 
 
