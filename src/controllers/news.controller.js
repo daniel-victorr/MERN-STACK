@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { createService, findAllService, countNews, topNewsServices, findByIdService, searchByTitleService, byUserService, updateService } from '../services/news.service.js'
+import { createService, findAllService, countNews, topNewsServices, findByIdService, searchByTitleService, byUserService, updateService, eraseService } from '../services/news.service.js'
 
 export const create = async (req, res) => {
     try {
@@ -189,15 +189,36 @@ export const update = async (req, res) =>{   //Aula 26
 
 
          if(String(news.user._id) !== req.userId){
-            return res.status(400).send({message: "Você não poder alterar esse News"})
+            return res.status(400).send({message: "You didn't update this post"})
          }
 
          await updateService (id, title, text, banner)
 
-         res.status(201).send({message: "Alterado com sucesso!"})
+         res.status(201).send({message: "Post successfully update!"})
        } catch (err) {
         res.status(500).send({message: err.message})
        }
+}
+
+export const erase = async (req, res) => {
+    try {
+        const id = req.params.id
+        const news = await findByIdService(id)
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).send({ message: "Invalid ID" })
+        }
+         
+        if(String(news.user._id) !== req.userId){
+            return res.status(400).send({message: "You didn't deleted this post"})
+         }
+
+        await eraseService(id)
+        
+        res.status(201).send({message: "Pos deleted successfully"})
+    } catch (err) {
+        res.status(201).send({message: err.message})
+    }
 }
 
 

@@ -78,4 +78,4 @@ const update = async (req, res) => {
     }
 }
 
-export { create, findAll, fidUserById, update }
+export { create, findAll, fidUserById, update, }
