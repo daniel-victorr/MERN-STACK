@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { createService, findAllService, countNews, topNewsServices, findByIdService, searchByTitleService, byUserService, updateService, eraseService } from '../services/news.service.js'
+import { createService, findAllService, countNews, topNewsServices, findByIdService, searchByTitleService, byUserService, updateService, eraseService, likeService, deleteLikeService, addCommentService, deleteCommentService } from '../services/news.service.js'
 
 export const create = async (req, res) => {
     try {
@@ -56,7 +56,7 @@ export const findtAll = async (req, res) => {
                 text: item.text,
                 banner: item.banner,
                 likes: item.likes,
-                coments: item.coments,
+                comments: item.comments,
                 name: item.user.name,
                 userName: item.user.userName,
                 userAvatar: item.user.avatar,
@@ -68,7 +68,7 @@ export const findtAll = async (req, res) => {
     }
 }
 
-export const topNews = async (req, res) => {    //Aula 22
+export const topNews = async (req, res) => {    
     try {
         const news = await topNewsServices()
 
@@ -83,7 +83,7 @@ export const topNews = async (req, res) => {    //Aula 22
                 text: news.text,
                 banner: news.banner,
                 likes: news.likes,
-                coments: news.coments,
+                comments: news.comments,
                 name: news.user.name,
                 userName: news.user.userName,
                 userAvatar: news.user.avatar,
@@ -95,11 +95,11 @@ export const topNews = async (req, res) => {    //Aula 22
     }
 }
 
-export const findById = async (req, res) => {   //Aula 23
+export const findById = async (req, res) => {   
     try {
         const { id } = req.params
         const news = await findByIdService(id)
-        
+
         res.status(201).send({
             news: {
                 id: news._id,
@@ -107,7 +107,7 @@ export const findById = async (req, res) => {   //Aula 23
                 text: news.text,
                 banner: news.banner,
                 likes: news.likes,
-                coments: news.coments,
+                comments: news.comments,
                 name: news.user.name,
                 userName: news.user.userName,
                 userAvatar: news.user.avatar,
@@ -115,20 +115,20 @@ export const findById = async (req, res) => {   //Aula 23
         })
     } catch (err) {
         res.status(500).send({ message: err.message })
-     }
+    }
 }
 
-export const searchByTitle = async (req, res) => { //Aula 24
+export const searchByTitle = async (req, res) => { 
 
     try {
-        
+
         const { title } = req.query
         const news = await searchByTitleService(title)
 
-        if(news.length === 0){
-           return res.status(400).send({message: "There are no news with this title"})
+        if (news.length === 0) {
+            return res.status(400).send({ message: "There are no news with this title" })
         }
-    
+
         res.status(200).send({
             results: news.map((item) => ({
                 id: item.id,
@@ -136,68 +136,68 @@ export const searchByTitle = async (req, res) => { //Aula 24
                 text: item.text,
                 banner: item.banner,
                 likes: item.likes,
-                coments: item.coments,
+                comments: item.comments,
                 name: item.user.name,
                 userName: item.user.userName,
                 userAvatar: item.user.avatar,
             }))
         })
     } catch (err) {
-        res.status(500).send({message: err.message})
+        res.status(500).send({ message: err.message })
     }
 
 }
 
-export const byUser = async (req, res) =>{    //Aula 25
-     try {
-    
-      const id = req.userId
-      const news = await byUserService(id)
-   
-      res.status(200).send({
-        results: news.map((item) => ({
-            id: item._id,
-            title: item.title,
-            text: item.text,
-            banner: item.banner,
-            likes: item.likes,
-            coments: item.coments,
-            name: item.user.name,
-            userName: item.user.userName,
-            userAvatar: item.user.avatar,
-        }))
-      })   
-     } catch (err) {
-        res.status(500).send({message: err.message})
-     }
+export const byUser = async (req, res) => {    
+    try {
+
+        const id = req.userId
+        const news = await byUserService(id)
+
+        res.status(200).send({
+            results: news.map((item) => ({
+                id: item._id,
+                title: item.title,
+                text: item.text,
+                banner: item.banner,
+                likes: item.likes,
+                comments: item.comments,
+                name: item.user.name,
+                userName: item.user.userName,
+                userAvatar: item.user.avatar,
+            }))
+        })
+    } catch (err) {
+        res.status(500).send({ message: err.message })
+    }
 }
 
-export const update = async (req, res) =>{   //Aula 26
-       try {
-         const { title, text, banner } = req.body
-         const { id } = req.params
-         
-         if( !title && !text && !banner){
-            return res.sendStatus(400)
-         }
+export const update = async (req, res) => {   
+    try {
+        const { title, text, banner } = req.body
+        const { id } = req.params
 
-         if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (!title && !text && !banner) {
+            return res.sendStatus(400)
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).send({ message: "Invalid ID" })
         }
-         
-         const news = await findByIdService(id)
+
+        const news = await findByIdService(id)
 
 
-         if(String(news.user._id) !== req.userId){
-            return res.status(400).send({message: "You didn't update this post"})
-         }
+        if (String(news.user._id) !== req.userId) {
+            return res.status(400).send({ message: "You didn't update this post" })
+        }
 
-         await updateService (id, title, text, banner)
+        await updateService(id, title, text, banner)
 
-         res.status(201).send({message: "Post successfully update!"})
-       } catch (err) {
-        res.status(500).send({message: err.message})
-       }
+        res.status(201).send({ message: "Post successfully update!" })
+    } catch (err) {
+        res.status(500).send({ message: err.message })
+    }
 }
 
 export const erase = async (req, res) => {
@@ -208,19 +208,83 @@ export const erase = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).send({ message: "Invalid ID" })
         }
-         
-        if(String(news.user._id) !== req.userId){
-            return res.status(400).send({message: "You didn't deleted this post"})
-         }
+
+        if (String(news.user._id) !== req.userId) {
+            return res.status(400).send({ message: "You didn't deleted this post" })
+        }
 
         await eraseService(id)
-        
-        res.status(201).send({message: "Pos deleted successfully"})
+
+        res.status(201).send({ message: "Pos deleted successfully" })
     } catch (err) {
-        res.status(201).send({message: err.message})
+        res.status(500).send({ message: err.message })
     }
 }
 
+export const likes = async (req, res) => {
+    try {
+        const id = req.params.id
+        const userId = req.userId
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).send({ message: "Invalid ID" })
+        }
+        const likeNews = await likeService(id, userId)
+
+        
+        if (!likeNews) {
+            await deleteLikeService(id, userId)
+            return res.status(200).send({ message: "Like successfully removed" })
+        }
+        res.status(200).send({ message: "Like done successfully" })
+
+    } catch (err) {
+        res.status(500).send({ message: err.message })
+    }
+}
+
+export const addComents = async (req, res) => {
+      try {
+        const {id} = req.params
+        const userId = req.userId
+        const { comment }  = req.body
+        
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).send({ message: "Invalid ID" })
+        }
+
+        if(!comment){
+            return res.status(401).send({message: "Write a message to comment"})
+        }
+        await addCommentService(id, comment, userId)
+        res.status(201).send({message: "Comment successfully completed!"})
+      } catch (err) {
+        res.status(500).send({message: err.message})
+      }
+}
+
+export const deleteComment = async (req, res) =>{
+    try {
+      const { idNews, idComment } = req.params
+      const userId = req.userId
+
+
+      const commentDeleted = await deleteCommentService(
+        idNews, 
+        idComment, 
+        userId) 
+
+      const commentFinder = commentDeleted.comments.find(item => item.idComment === idComment)
+
+      if(commentFinder.userId !== userId){
+        return res.status(400).send({message: "You can't delete this comment"})
+      }
+  
+      res.status(201).send({message: "Comment successfully removed!"})  
+    } catch (err) {
+        res.status(500).send({message: err.message})
+    }
+}
 
 
 
