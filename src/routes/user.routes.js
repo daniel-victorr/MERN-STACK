@@ -7,6 +7,6 @@ const router = express.Router()
 router.post('/', create);
 router.get('/', findAll)
 router.get('/:id', validId, validUser, fidUserById)
-router.patch('/:id', validId, validUser, update)
+router.patch('/:id', validId, validUser, update) 
 
 export default  router;
