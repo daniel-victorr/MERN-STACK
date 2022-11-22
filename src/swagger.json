@@ -11,7 +11,7 @@
     "servers": [
   
       {
-        "url": "http://api-breakingnews.onrender.com",
+        "url": "https://api-breakingnews-4pdo.onrender.com",
         "description": "Render Server"
       },
       {
