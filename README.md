@@ -5,10 +5,10 @@ They use good programming practices;
 
 #### Technologies used:
 
-- MONGODB
-- EXPRESS
-- REACT.JS
-- NODE.JS
+- MongoDB
+- Express
+- React.js
+- Node.js
 
 #### Backend documentation
 
