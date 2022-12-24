@@ -554,7 +554,7 @@
                 "examples": {
                   "Comment": {
                     "value": {
-                      "message": "Comentário legal"
+                      "comment": "Comentário legal"
                     }
                   }
                 }
